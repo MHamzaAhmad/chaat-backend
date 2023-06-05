@@ -38,7 +38,7 @@ export const jwtAuth = (req, res, next) => {
     } catch (error) {
       return next(error);
     }
-  });
+  })(req, res, next);
 };
 
 export default jwtStrategy;

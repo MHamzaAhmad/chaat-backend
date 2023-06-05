@@ -11,13 +11,25 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.provider === "email";
+      },
       select: false,
     },
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    provider: {
+      type: String,
+      enum: ["email", "google"],
+      default: "email",
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
     },
   },
   { timestamps: true }
