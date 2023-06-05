@@ -1,6 +1,5 @@
 import express from "express";
 import morgan from "morgan";
-import { createServer } from "http";
 import router from "./router.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import _initializePassport from "./passport/passport.js";
@@ -12,10 +11,8 @@ app.use(morgan("dev"));
 
 await connectDB();
 
-const server = createServer(app);
-
 app.use("/api", router);
 
 app.use(errorHandler);
 
-export default server;
+export default app;

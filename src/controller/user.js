@@ -5,7 +5,7 @@ export const create = async (req, res, next) => {
     const oldUser = await userModel.findOne({ email: req.body.email });
     if (oldUser) return res.status(409).send({ msg: "User already exists" });
     const user = await userModel.create(req.body);
-    delete user.password;
+    delete user._doc.password;
     req.user = user._doc;
     next();
   } catch (error) {
