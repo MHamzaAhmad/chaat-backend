@@ -12,3 +12,11 @@ export const create = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const getUser = async (req, res, next) => {
+  try {
+    return res.status(200).send({ user: req.user });
+  } catch (error) {
+    return next(error);
+  }
+};

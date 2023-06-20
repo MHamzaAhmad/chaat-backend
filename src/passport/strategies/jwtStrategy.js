@@ -10,14 +10,13 @@ const jwtStrategy = new Strategy(
   },
   async (req, payload, done) => {
     try {
-      const user = await User.findById(payload._id).select("+password");
+      const user = await User.findById(payload.id);
       if (!user)
         return done(null, false, {
           message: "User does not exist",
           status: 404,
         });
 
-      req.user = user;
       done(null, user, {
         message: "User is authenticated successfully",
         status: 200,
@@ -34,7 +33,10 @@ const jwtStrategy = new Strategy(
 export const jwtAuth = (req, res, next) => {
   passport.authenticate("jwt", { session: false }, (err, user, info) => {
     try {
-      return res.status(info.status).send({ msg: info.message });
+      if (!user)
+        return res.status(info.status ?? 401).send({ msg: info.message });
+      req.user = user;
+      next();
     } catch (error) {
       return next(error);
     }
