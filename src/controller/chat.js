@@ -1,7 +1,9 @@
-import io from "../services/socketService";
-
-const chatServer = () => {
-  io.on("connection", () => {});
+const chatServer = (io) => {
+  io.on("connection", (socket) => {
+    socket.on("message", (msg) => {
+      messageHandler(msg);
+    });
+  });
 };
 
 const messageHandler = (data) => {

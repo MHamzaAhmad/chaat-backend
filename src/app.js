@@ -9,18 +9,17 @@ import { createServer } from "http";
 import cors from "cors";
 
 const app = express();
+const server = createServer(app);
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors({ origin: "*" }));
 
 await connectDB();
 
+init(server);
+
 app.use("/api", router);
 
 app.use(errorHandler);
-
-const server = createServer(app);
-
-init(server);
 
 export default server;

@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import userModel from "../models/user";
 
 const generateTokens = (req, res, next) => {
   try {
