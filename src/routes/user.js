@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { generateTokens, refreshToken } from "../services/tokenService.js";
 import addFormats from "ajv-formats";
-import { create, getUser } from "../controller/user.js";
+import { create, getUser, getUsers } from "../controller/user.js";
 import { Validator } from "express-json-validator-middleware";
 import getUserSchema from "../validator/user.js";
 import { localAuth } from "../passport/strategies/localAuth.js";
@@ -15,7 +15,7 @@ addFormats(ajv);
 userRouter
   .route("/")
   .post(validate({ body: getUserSchema(true) }), create, generateTokens)
-  .get(jwtAuth, getUser);
+  .get(jwtAuth, getUsers);
 
 userRouter
   .route("/login")

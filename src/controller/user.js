@@ -1,4 +1,5 @@
 import userModel from "../models/user.js";
+import _ from "lodash";
 
 export const create = async (req, res, next) => {
   try {
@@ -10,6 +11,17 @@ export const create = async (req, res, next) => {
     next();
   } catch (error) {
     return next(error);
+  }
+};
+
+export const getUsers = async (req, res, next) => {
+  try {
+    const users = await userModel.find();
+    if (_.isEmpty(users))
+      return res.status(404).send({ msg: "No users found in the database" });
+    res.status(200).send(users);
+  } catch (error) {
+    next(error);
   }
 };
 

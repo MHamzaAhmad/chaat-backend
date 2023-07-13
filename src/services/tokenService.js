@@ -19,9 +19,20 @@ const generateTokens = (req, res, next) => {
 const refreshToken = (req, res, next) => {
   try {
     const rt = req.headers["x-refresh-token"];
+    if (!rt) {
+      return res
+        .status(401)
+        .send({ msg: "Refresh token is missing in the request" });
+    }
     jwt.verify(rt, process.env.JWT_RFRESH_SECRET, (err, decoded) => {
       if (err) return res.status(401).send({ msg: "Refresh token is expired" });
-      return res.status(200).send(getTokens(decoded));
+
+      const data = {
+        accessToken: getNewAccessToken(decoded),
+        refreshToken: rt,
+      };
+
+      return res.status(200).send(data);
     });
   } catch (error) {
     next(error);
@@ -29,17 +40,27 @@ const refreshToken = (req, res, next) => {
 };
 
 const getTokens = (payload) => {
-  try {
-    const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-      expiresIn: "1h",
-    });
-    const refreshToken = jwt.sign(payload, process.env.JWT_RFRESH_SECRET, {
-      expiresIn: "30d",
-    });
-    return { accessToken, refreshToken };
-  } catch (error) {
-    next(error);
-  }
+  const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+    expiresIn: "1000",
+  });
+  const refreshToken = jwt.sign(payload, process.env.JWT_RFRESH_SECRET, {
+    expiresIn: "30d",
+  });
+  return { accessToken, refreshToken };
+};
+
+const getNewAccessToken = (data) => {
+  const { id, name, email, role, provider } = data;
+  const payload = {
+    id,
+    name,
+    email,
+    role,
+    provider,
+  };
+  return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+    expiresIn: "1h",
+  });
 };
 
 export { generateTokens, refreshToken };
