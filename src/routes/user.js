@@ -17,6 +17,8 @@ userRouter
   .post(validate({ body: getUserSchema(true) }), create, generateTokens)
   .get(jwtAuth, getUsers);
 
+userRouter.route("/current_user").get(jwtAuth, getUser);
+
 userRouter
   .route("/login")
   .post(validate({ body: getUserSchema(true) }), localAuth, generateTokens);

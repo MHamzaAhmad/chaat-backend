@@ -61,12 +61,40 @@ export const getUserChats = async (req, res, next) => {
             password: 0,
           },
         },
+        {
+          $group: {
+            _id: "$_id",
+            pre: {
+              $first: "$$ROOT",
+            },
+          },
+        },
+        {
+          $replaceRoot: {
+            newRoot: "$pre",
+          },
+        },
       ])
       .exec();
     if (_.isEmpty(users))
       return res.status(404).send({ msg: "No users found" });
 
     res.status(200).send(users);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMessages = async (req, res, next) => {
+  try {
+    const { receiverId } = req.query;
+    const messages = await message.find({
+      $or: [
+        { sender: req.user._id, receiver: receiverId },
+        { sender: receiverId, receiver: req.user._id },
+      ],
+    });
+    res.status(_.isEmpty(messages) ? 404 : 200).send(messages);
   } catch (error) {
     next(error);
   }
